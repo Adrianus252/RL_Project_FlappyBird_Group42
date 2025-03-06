@@ -1,3 +1,4 @@
 # ignores all files in the game_states directory
 */__pycache__
 *.pth
+/ppo/flappy_env_3.9
