@@ -14,7 +14,7 @@ cd <projectDirectory>
 ## 2.1 Create 
 
 ```python
-py -3.9 -m venv flappy_env_3.9
+py -3.9 -m venv .\RL_Project_FlappyBird_Group42\
 ```
 
 ## 2.2 Allow running scripts
@@ -25,8 +25,8 @@ Set-ExecutionPolicy Unrestricted -Scope Process
 
 ## 2.2 Activate virtual env
 
-```python
-flappy_env_3.9\Scripts\activate
+```python´
+source .\Scripts\activate 
 ```
 
 # 3 Installation
@@ -46,4 +46,16 @@ cd ..\ppo\
 pip install torch torchvision torchaudio
 python train_myPPO.py
 python test_myPPO.py
+```
+
+## Freeze Zustand des Environments
+
+```python
+pip freeze > requirements.txt
+```
+
+## Installieren des Environments anhand generierter Requirements Datei
+
+```python
+pip install -r requirements.txt
 ```
