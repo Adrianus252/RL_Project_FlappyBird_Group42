@@ -26,7 +26,10 @@ Set-ExecutionPolicy Unrestricted -Scope Process
 ## 2.2 Activate virtual env
 
 ```python´
+#linux
 source .\Scripts\activate 
+#windows
+. Scripts\activate 
 ```
 
 # 3 Installation
