@@ -176,5 +176,3 @@ cython_debug/
 
 # model state
 *.pth
-/Scripts
-pyvenv.cfg
