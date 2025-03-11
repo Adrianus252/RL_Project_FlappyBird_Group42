@@ -178,4 +178,4 @@ cython_debug/
 *.pth
 /Scripts
 /Include
-pyenv.cfg
+pyvenv.cfg
