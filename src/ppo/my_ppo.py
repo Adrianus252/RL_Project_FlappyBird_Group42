@@ -22,7 +22,7 @@ class ActorCriticNet(nn.Module):
         value = self.value_head(z)
         return logits, value
 
-# === Simple Memory Buffer for One Episode ===
+# === Memory Buffer (Batch Learning) ===
 class PPOMemory:
     def __init__(self):
         self.states = []
@@ -58,12 +58,16 @@ class PPOAgent:
         gamma=0.99,
         lam=0.95,
         eps_clip=0.2,
-        K_epochs=4
+        K_epochs=4,
+        batch_size=2048,
+        entropy_beta=0.03 #changed
     ):
         self.gamma = gamma
         self.lam = lam
         self.eps_clip = eps_clip
         self.K_epochs = K_epochs
+        self.batch_size = batch_size
+        self.entropy_beta = entropy_beta
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.net = ActorCriticNet(obs_dim, act_dim).to(self.device)
@@ -71,19 +75,25 @@ class PPOAgent:
 
         self.memory = PPOMemory()
 
-    # --- Action selection ---
+    # --- Action Selection ---
     def select_action(self, state):
+        state = (state - np.mean(state)) / (np.std(state) + 1e-8)  # Normalize state
         state_t = torch.FloatTensor(state).to(self.device)
+
         logits, value = self.net(state_t)
+        logits = logits - logits.mean()  # Prevent bias towards flapping
         dist = torch.distributions.Categorical(logits=logits)
         action = dist.sample()
+
         return action.item(), dist.log_prob(action).item(), value.item()
 
-    # --- Store transition in memory ---
+    # --- Store Transitions ---
     def store_transition(self, state, action, log_prob, reward, done, value):
+        flap_penalty = -0.4 if action == 1 else 0  # Penalize excessive flapping
+        reward += flap_penalty
         self.memory.store(state, action, log_prob, reward, done, value)
 
-    # --- GAE Computation ---
+    # --- Compute Generalized Advantage Estimation (GAE) ---
     def compute_gae(self, next_value):
         rewards = self.memory.rewards
         dones = self.memory.dones
@@ -92,21 +102,22 @@ class PPOAgent:
         advantages = []
         gae = 0.0
         for i in reversed(range(len(rewards))):
-            delta = rewards[i] + self.gamma * values[i+1] * (1 - dones[i]) - values[i]
+            delta = rewards[i] + self.gamma * values[i + 1] * (1 - dones[i]) - values[i]
             gae = delta + self.gamma * self.lam * (1 - dones[i]) * gae
             advantages.insert(0, gae)
         return advantages
 
     # --- PPO Update ---
     def update(self):
-        # Prepare
+        if len(self.memory.states) < self.batch_size:
+            return
+
         states = np.array(self.memory.states, dtype=np.float32)
         actions = np.array(self.memory.actions)
         old_log_probs = np.array(self.memory.log_probs, dtype=np.float32)
         dones = np.array(self.memory.dones, dtype=np.float32)
         values = np.array(self.memory.values, dtype=np.float32)
 
-        # Next value (for final GAE)
         next_value = 0.0
         if dones[-1] == 0:
             s_t = torch.FloatTensor(states[-1]).to(self.device)
@@ -117,7 +128,6 @@ class PPOAgent:
         advantages = np.array(advantages, dtype=np.float32)
         returns = advantages + values
 
-        # Convert to torch
         states_t = torch.FloatTensor(states).to(self.device)
         actions_t = torch.LongTensor(actions).to(self.device)
         old_log_probs_t = torch.FloatTensor(old_log_probs).to(self.device)
@@ -135,7 +145,9 @@ class PPOAgent:
 
             policy_loss = -torch.min(surr1, surr2).mean()
             value_loss = torch.nn.MSELoss()(val.squeeze(), returns_t)
-            loss = policy_loss + 0.5 * value_loss
+
+            entropy_bonus = self.entropy_beta * dist.entropy().mean()
+            loss = policy_loss + 0.5 * value_loss - entropy_bonus
 
             self.optimizer.zero_grad()
             loss.backward()
