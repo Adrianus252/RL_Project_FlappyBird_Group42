@@ -179,3 +179,6 @@ cython_debug/
 /Scripts
 /Include
 pyvenv.cfg
+trained_models
+experiment_logs
+share
