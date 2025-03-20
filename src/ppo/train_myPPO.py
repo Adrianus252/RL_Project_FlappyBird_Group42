@@ -10,8 +10,8 @@ def main():
     agent = PPOAgent(obs_dim, act_dim, lr=2.5e-4)
     
 
-    max_episodes = 500
-
+    max_episodes = 25000
+    max_reward = 0
     for ep in range(max_episodes):
         state = env.reset()
         done = False
@@ -21,17 +21,20 @@ def main():
             action, log_prob, value = agent.select_action(state)
             next_state, reward, done, info = env.step(action)
 
-            agent.store_transition(state, action, log_prob, reward, float(done), value)
+            agent.store_transition(state, action, log_prob, reward, float(done), value, info)
 
             state = next_state
             ep_reward += reward
 
         agent.update()  # PPO update after each episode
         print(f"Episode {ep + 1}/{max_episodes}, Reward: {ep_reward}")
+        if ep_reward > max_reward:
+            max_reward = ep_reward
 
     # Save the model
     agent.save("ppo_flappy.pth")
     print("Training done! Model saved to ppo_flappy.pth")
+    print("MAX Reward: ", max_reward)
     env.close()
 
 if __name__ == "__main__":

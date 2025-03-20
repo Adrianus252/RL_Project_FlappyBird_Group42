@@ -80,7 +80,19 @@ class PPOAgent:
         return action.item(), dist.log_prob(action).item(), value.item()
 
     # --- Store transition in memory ---
-    def store_transition(self, state, action, log_prob, reward, done, value):
+    def store_transition(self, state, action, log_prob, reward, done, value, info):
+        # Strafe für zu große Sprünge
+        if action > 0.8:
+            reward -= 0.2  
+
+        # Bestrafe das Hochfliegen zu stark
+        reward -= abs(action) * 0.1  
+
+        # Bonus für das erfolgreiche Durchfliegen einer Pipe
+        if "score" in info:
+            reward += info["score"] * 5  
+
+
         self.memory.store(state, action, log_prob, reward, done, value)
 
     # --- GAE Computation ---
