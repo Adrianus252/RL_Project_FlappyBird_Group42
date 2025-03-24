@@ -3,7 +3,6 @@ from stable_baselines3 import TD3
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.noise import NormalActionNoise
 from wrapper import ContinuousFlappyBirdWrapper
-import torch
 
 # Create the environment
 env = make_vec_env(lambda: ContinuousFlappyBirdWrapper(), n_envs=1)

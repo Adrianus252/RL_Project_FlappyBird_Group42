@@ -13,12 +13,14 @@ td3/
 ├── evaluate/
 │   └── highest-rewards.py             # Show the 5 best results by average values.
 │   └── evaluate_models.py             # Run tests and print all results into a csv file
-│   └── evaluated_models_md.py             # Convert the csv file from `evaluate_models.py` into markdown compatible table.
-├── test.py                 # Run tests to evaluate performance.
-├── test_best_episode.py                 # Run tests to evaluate performance and visualize the best game at the end. 
-├── train.py                # Training script.
-├── wrapper.py              # Environment wrapper for Flappy Bird.
-└── README.md               # Project documentation.
+│   └── evaluated_models_md.py         # Convert the csv file from `evaluate_models.py` into markdown compatible table.
+├── manual/
+│   ├── test_best_episode.py    # Run tests to evaluate performance and visualize the best game at the end. 
+│   ├── test.py                 # Run tests to evaluate performance.
+│   ├── train.py                # Training script.
+│   ├── wrapper.py              # Environment wrapper for Flappy Bird.
+├── README.md               # Project documentation.
+└── requirements.txt        # External Libraries.
 ```
 
 ## Manual Use
@@ -79,7 +81,7 @@ Multiple hyperparameter configurations were tested to understand their effect on
 The following chart shows the average reward received by the agent after testing each model with 100 episodes. It highlights the top 5 experiments, with each line corresponding to a different experiment with varying hyperparameters:
 ![top5-rewards-overview](../../assets/imgs/td3-highest-rewards.png)
 
-(For a complete view of the results, refer to the full output in [100_episodes_output.md](./100_episodes_output.md)).
+(For a complete view of the results, refer to the full output in [100_episodes_output.md](./results/100_episodes_output.md)).
 
 ## Conclusion
 This project demonstrates the application of the TD3 reinforcement learning algorithm in a classic game environment, Flappy Bird. By experimenting with different hyperparameters, we gain insights into how each factor influences the agent’s performance. The provided scripts allow for easy training, testing, and batch-based automation to explore these effects further.
