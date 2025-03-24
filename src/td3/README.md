@@ -23,17 +23,18 @@ td3/
 
 ## Manual Use
 
+> Note: All commands should be exectuted from the root project folder unless otherwise defined. If you execute commands from another folder you might have to update certain paths.
+
 ### Training from Scratch
 To train the TD3 agent from scratch:
-1. Install the virtual enrinoment and install all neccessary dependencies:
+1. Install the virtual environment and install all neccessary dependencies:
    ```sh
-   cd src/td3
    py -3.9 -m venv .
-   pip install -r requirements.txt
+   pip install -r src/td3/requirements.txt
    ```
 2. Activate the virtual environment:
    ```sh
-   source Script/activate
+   source Scripts/activate
    ```
 3. Train the model:
    ```sh
@@ -58,6 +59,8 @@ python src/td3/train.py
 This will load the trained model and execute it in the Flappy Bird environment, displaying the agent’s performance every 100th episode.
 
 ## Automated Use
+> Note: All commands should be exectuted from the root project folder unless otherwise defined. If you execute commands from another folder you might have to update certain paths.
+
 ### Training in Batches
 To train the agent overnight in batches, use the following command:
    ```sh
