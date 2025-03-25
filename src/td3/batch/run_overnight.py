@@ -14,7 +14,6 @@ timesteps_list = [50000, 100000, 200000, 500000]  # Number of timesteps for trai
 learning_rates = [0.0001, 0.001, 0.005, 0.01]  # Learning rate for optimizer
 batch_sizes = [32, 64, 128, 256]  # Batch size for updates
 gammas = [0.95, 0.98, 0.99]  # Discount factor (gamma)
-noises = [0.1, 0.2, 0.3, 0.5]  # Exploration noise (for TD3)
 
 
 # Create folder to store logs & models
