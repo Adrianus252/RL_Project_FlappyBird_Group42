@@ -2,6 +2,8 @@
 
 This project aims to train an agent to play Flappy Bird using the Twin Delayed Deep Deterministic (TD3) algorithm. The agent is trained to maximize its cumulative reward by navigating through pipes while avoiding obstacles.
 
+https://github.com/user-attachments/assets/f754850d-4a93-43da-868a-ce4a397bd828
+
 ## Project Structure
 ```sh
 td3/
