@@ -13,7 +13,6 @@ def main():
 
     total_episodes = 1000  # total loop count
     for ep in range(1, total_episodes + 1):
-        # Possibly do training or skip training here if you want
 
         # Only visualize every 50 episodes
         if ep % 200 == 0:

@@ -3,7 +3,6 @@ import re
 import numpy as np
 import pandas as pd
 import torch
-#from src.my_ppo import PPOAgent  # Hier musst du deinen PPO-Agent importieren
 from my_ppo import PPOAgent
 import gym
 import flappy_bird_gym
@@ -49,7 +48,7 @@ def evaluate_model(model, env, num_episodes=NUM_EPISODES):
         steps = 0
 
         while not done and steps < MAX_STEPS:
-            action, _, _ = model.select_action(obs)  # Verwende select_action() von PPO-Agent
+            action, _, _ = model.select_action(obs)
             obs, reward, done, _ = env.step(action)
 
             episode_reward += reward
@@ -82,8 +81,6 @@ def main():
         print("No models found in directory:", MODEL_DIR)
         return
 
-    #env = FlappyBirdEnv()  # Direkt den FlappyBird-Env laden
-    # === Initialisiere die Umgebung ===
     env = gym.make("FlappyBird-v0") # Ersetze dies mit der tatsächlichen Umgebung
     obs_dim = env.observation_space.shape[0]
     act_dim = env.action_space.n  # Diskrete Aktionen

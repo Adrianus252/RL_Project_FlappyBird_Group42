@@ -41,10 +41,6 @@ class TrainingLogger:
             
             self.episode_rewards.clear()
             self.episode_timesteps.clear()
-#27500
-#3.5e-4
-#64
-#0.99
 
 def main():
     parser = argparse.ArgumentParser()

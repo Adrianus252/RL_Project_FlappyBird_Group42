@@ -4,15 +4,7 @@ import numpy as np
 import torch
 import gym
 import flappy_bird_gym
-from my_ppo import PPOAgent  # Stelle sicher, dass dein PPOAgent importiert wird
-
-#model 25_000_ppo_flappy.pth
-#Seed: 211417; Score 36
-#Seed: 845882; Score 49
-#Seed: 400627; Score 85
-
-#model 27_500_ppo_flappy.pth
-#Seed: 741630; Score 218
+from my_ppo import PPOAgent
 
 # === Initialisiere die Umgebung ===
 env = gym.make("FlappyBird-v0") # Ersetze dies mit der tatsächlichen Umgebung
@@ -22,8 +14,9 @@ act_dim = env.action_space.n  # Diskrete Aktionen
 # === Lade den PPO-Agenten ===
 agent = PPOAgent(obs_dim, act_dim)
 #agent.load("ppo_flappy.pth")  # Lade dein trainiertes Modell
-agent.load("trained_models\exp_55_ep20000_lr0.0001_batch128_gamma0.98.pth")
-num_episodes = 1000  # Anzahl der Testepisoden
+#agent.load("trained_models\exp_55_ep20000_lr0.0001_batch128_gamma0.98.pth")
+agent.load("trained_models\exp_72_ep27500_lr0.0001_batch32_gamma0.95.pth")
+num_episodes = -1  # Anzahl der Testepisoden
 
 best_reward = -float("inf")
 best_seed = None
@@ -60,13 +53,13 @@ print(f"\nBest episode reward: {best_reward} (Seed: {best_seed}; Score {best_sco
 # === Wiederholung der besten Episode ===
 print("\nReplaying the best episode...")
 #set_seed(best_seed)
-set_seed(741630)
+set_seed(1172)
 obs = env.reset()
 done = False
 
 while not done:
     env.render()
-    time.sleep(0.003)
+    time.sleep(0.03)
     action, _, _ = agent.select_action(obs)
     obs, _, done, _ = env.step(action)
 
