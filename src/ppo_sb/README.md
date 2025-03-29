@@ -23,11 +23,12 @@ ppo_sb/
 │   ├── train.py                  # Train a PPO model with configurable hyperparameters
 │   ├── test.py                   # Test a trained PPO model
 │   ├── run_overnight.py          # Batch training and evaluation of multiple models
+│   ├── run_specific.py           # Batch training and evaluation of specific hyperparameters
+├── evaluate/
 │   ├── evaluate_models.py        # Evaluate trained models and compute metrics
 │   ├── evaluate_models_md.py     # Convert evaluation results into a Markdown table
 │   ├── evaluate_with_score.py    # Evaluate trained models and compute metrics with passes pipes
 │   ├── highest_rewards.py        # Plot top 5 experiments by average reward
-│
 ├── manual/
 │   ├── train.py                  # Train a PPO model with configurable hyperparameters
 │   ├── test.py                   # Test a trained PPO model
