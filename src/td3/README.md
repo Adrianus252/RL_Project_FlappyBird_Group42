@@ -2,27 +2,36 @@
 
 This project aims to train an agent to play Flappy Bird using the Twin Delayed Deep Deterministic (TD3) algorithm. The agent is trained to maximize its cumulative reward by navigating through pipes while avoiding obstacles.
 
-https://github.com/user-attachments/assets/f754850d-4a93-43da-868a-ce4a397bd828
+- [Flappy Bird Reinforcement Learning with TD3](#flappy-bird-reinforcement-learning-with-td3)
+  - [Project Structure](#project-structure)
+  - [Manual Use](#manual-use)
+    - [Training from Scratch](#training-from-scratch)
+    - [Testing from Scratch](#testing-from-scratch)
+  - [Automated Use](#automated-use)
+    - [Training in Batches](#training-in-batches)
+  - [Results](#results)
+  - [Conclusion](#conclusion)
+
 
 ## Project Structure
 ```sh
 td3/
 ├── batch/
-│   ├── run_overnight.py    # Run the training and testing overnight in batches.
-│   ├── train.py            # Batch-based script for training the TD3 model.
-│   ├── test.py             # Batch-based script to evaluate the trained model.
-│   ├── wrapper.py          # Custom wrapper for the Flappy Bird environment.
+│   ├── run_overnight.py         # Run the training and testing overnight in batches.
+│   ├── train.py                 # Batch-based script for training the TD3 model.
+│   ├── test.py                  # Batch-based script to evaluate the trained model.
+│   ├── wrapper.py               # Custom wrapper for the Flappy Bird environment.
 ├── evaluate/
-│   └── highest-rewards.py             # Show the 5 best results by average values.
-│   └── evaluate_models.py             # Run tests and print all results into a csv file
-│   └── evaluated_models_md.py         # Convert the csv file from `evaluate_models.py` into markdown compatible table.
+│   └── highest-rewards.py       # Show the 5 best results by average values.
+│   └── evaluate_models.py       # Run tests and print all results into a csv file
+│   └── evaluated_models_md.py   # Convert the csv file from `evaluate_models.py` into markdown compatible table.
 ├── manual/
-│   ├── test_best_episode.py    # Run tests to evaluate performance and visualize the best game at the end. 
-│   ├── test.py                 # Run tests to evaluate performance.
-│   ├── train.py                # Training script.
-│   ├── wrapper.py              # Environment wrapper for Flappy Bird.
-├── README.md               # Project documentation.
-└── requirements.txt        # External Libraries.
+│   ├── test_best_episode.py     # Run tests to evaluate performance and visualize the best game at the end. 
+│   ├── test.py                  # Run tests to evaluate performance.
+│   ├── train.py                 # Training script.
+│   ├── wrapper.py               # Environment wrapper for Flappy Bird.
+├── README.md                    # Project documentation.
+└── requirements.txt             # External Libraries.
 ```
 
 ## Manual Use
