@@ -186,4 +186,6 @@ ppo_flappybird_tensorboard
 runs
 ppo_flappybird.zip
 100_episodes_output.csv
+trained_models
+experiment_logs
 share
