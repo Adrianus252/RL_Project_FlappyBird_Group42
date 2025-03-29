@@ -25,6 +25,7 @@ ppo_sb/
 │   ├── run_overnight.py          # Batch training and evaluation of multiple models
 │   ├── evaluate_models.py        # Evaluate trained models and compute metrics
 │   ├── evaluate_models_md.py     # Convert evaluation results into a Markdown table
+│   ├── evaluate_with_score.py    # Evaluate trained models and compute metrics with passes pipes
 │   ├── highest_rewards.py        # Plot top 5 experiments by average reward
 │
 ├── manual/
