@@ -1,6 +1,13 @@
 # Navigating the Flappy Bird Challenge with Reinforcement Learning: Insights from TD3 and PPO
  
-TODO: abstract
+This repository contains the code for experiments related to hyperparameter # Hyperparameter Optimization for Reinforcement Learning Models
+
+This repository contains the code for experiments related to hyperparameter optimization in reinforcement learning (RL) models, specifically focusing on TD3 and PPO algorithms. The results of these experiments, including detailed performance comparisons, are discussed in the [accompanying paper](./Reinforcement_Learning_Flappy_Bird.pdf).
+
+In the paper, we explore how various hyperparameters influence key performance metrics such as average reward, convergence speed, stability, and exploration vs. exploitation. The top-performing configurations are highlighted, with insights into their effectiveness in different RL environments.
+
+Please refer to the paper for a comprehensive analysis of the results. The repository includes the code used for these experiments, and you can use it to replicate or extend the trials. Contributions are welcome!
+
 
 
 - [Installation](#installation)
