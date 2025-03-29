@@ -101,11 +101,16 @@ This automates training/testing with various hyperparameters (timesteps, learnin
 
 ## Results
 
-Multiple hyperparameter configurations can be tested to see how each affects performance. For example:
-- Timesteps: [50000, 100000, 200000, 500000]
-- Learning Rates: [0.0001, 0.001, 0.005, 0.01]
-- Batch Sizes: [32, 64, 128, 256]
-- Gammas: [0.95, 0.98, 0.99]
+Multiple hyperparameter configurations were tested to understand their effect on the agent’s performance. The following hyperparameters were varied:
+- Timesteps: [50000, 100000, 200000, 500000]: The number of timesteps used for training the model.
+- Learning Rates: [0.0001, 0.001, 0.005, 0.01]: The learning rate used for the optimizer.
+- Batch Sizes: [32, 64, 128, 256]: The batch size used during updates.
+- Gammas: [0.95, 0.98, 0.99]: The discount factor used for calculating future rewards.
+
+The following chart shows the average reward received by the agent after testing each model with 100 episodes. It highlights the top 5 experiments, with each line corresponding to a different experiment with varying hyperparameters:
+![top5-rewards-overview-ppo-sb](../../assets/imgs/ppo-sb-highest-rewards.png)
+
+(For a complete view of the results, refer to the full output in [100_episodes_output.md](./results/100_episodes_output.md)).
 
 After training, each model can be evaluated with:
 
