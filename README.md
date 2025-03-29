@@ -1,2 +1,34 @@
-# RL_Project_FlappyBird_Group42
+# Navigating the Flappy Bird Challenge with Reinforcement Learning: Insights from TD3 and PPO
  
+TODO: abstract
+
+
+- [Installation](#installation)
+- [License](#license)
+- [Authors](#authors)
+
+# Installation
+
+It is recommended to use a virtual environment for this project. The required Python version is **Python 3.9**.
+
+To ensure compatibility, dependencies should be installed separately for each algorithm. If you have existing dependencies installed, consider removing them before installing new ones.
+
+Instructions for installing and running each algorithm can be found in the corresponding folder inside the `src` folder:
+
+- [**ppo-sb**](./src/ppo_sb/): This implementation of Proximal Policy Optimization (PPO) uses the `stable-baselines3` library.
+- [**td3**](./src/td3): This implementation of Twin Delayed Deep Deterministic Policy Gradient (TD3) also utilizes `stable-baselines3`.
+- [**ppo**](./src/ppo/): This is a custom-developed implementation of PPO.
+
+For detailed setup instructions, refer to the respective `README` files in each algorithm's folder.
+
+# License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](./LICENSE) file for details.
+
+# Authors
+
+This project was developed by the following contributors, listed in alphabetical order:
+
+- Adrianus Jonathan Engelbrecht
+- Alexander Hartung
+- Tabea Runzheimer
