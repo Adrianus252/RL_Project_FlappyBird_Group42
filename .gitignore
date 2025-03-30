@@ -179,6 +179,13 @@ cython_debug/
 /Scripts
 /Include
 pyvenv.cfg
+trained_models/
+experiment_logs/
+ppo_flappy_tensorboard
+ppo_flappybird_tensorboard
+runs
+ppo_flappybird.zip
+100_episodes_output.csv
 trained_models
 experiment_logs
 share
