@@ -8,6 +8,12 @@ In the paper, we explore how various hyperparameters influence key performance m
 
 Please refer to the paper for a comprehensive analysis of the results. The repository includes the code used for these experiments, and you can use it to replicate or extend the trials. Contributions are welcome!
 
+A dedicated presentation of the project is available on the groups project website: [RL Flappy Bird Group 42](https://publish.obsidian.md/rl-flappybird-group42/). It includes:
+- Discussion of our custom PPO implementation (code & theory)
+- The reasoning behind algorithm choices and design decisions
+- Visual results (training plots, images, and videos)
+- Step-by-step instructions to get started from the GitHub repo
+
 # Quick Start
 
 - [Installation](#installation)
