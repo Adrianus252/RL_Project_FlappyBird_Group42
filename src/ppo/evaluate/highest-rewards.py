@@ -4,7 +4,7 @@ import re
 import matplotlib.pyplot as plt
 
 # Load all CSV files in the experiment_logs directory
-csv_files = glob.glob("_batch_gut_experiment_logs/*.csv")
+csv_files = glob.glob("experiment_logs/*.csv")
 
 # Check if we have any CSV files
 if not csv_files:
@@ -30,6 +30,7 @@ else:
     # Compute summary and sort by highest Avg Reward
     summary = df_all.groupby("experiment").agg({
         "Avg Reward": "max", 
+        "Avg Pipes": "max",
         "Episodes": "max",
         "Learning Rate": "first",
         "Batch Size": "first",
@@ -53,10 +54,10 @@ else:
     for exp_name, exp_data in df_top.groupby("experiment"):
         # Get Gamma and Avg Pipes values
         gamma = summary.loc[exp_name, "Gamma"]
-        
+        avg_pipes = summary.loc[exp_name, "Avg Pipes"]
         
         # Update the legend to include Gamma and Avg Pipes
-        label = f"{exp_name} | Gamma: {gamma} "
+        label = f"{exp_name} | Gamma: {gamma} | Avg Pipes: {avg_pipes}"
         plt.plot(exp_data["Episodes"], exp_data["Avg Reward"], label=label)
 
     plt.xlabel("Episodes")

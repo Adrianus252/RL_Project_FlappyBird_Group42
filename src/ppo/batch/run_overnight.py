@@ -29,8 +29,8 @@ for i, (episodes, lr, batch_size, gamma) in enumerate(experiments):
     print(f"\n Running Experiment {i+1}/{len(experiments)}: {experiment_name}")
 
     train_command = [
-        venv_python,
-        "src/ppo/batch/train_myPPO_batch.py",
+         "powershell", "-Command",
+        f"& py -3.9 'src/ppo/batch/train_myPPO_batch.py' "
         "--episodes", str(episodes),
         "--learning_rate", str(lr),
         "--batch_size", str(batch_size),

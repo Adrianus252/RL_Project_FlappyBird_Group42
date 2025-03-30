@@ -17,30 +17,35 @@ class TrainingLogger:
         self.episode_pipes = []
         self.episode_timesteps = []
         self.current_episode_reward = 0
+        self.current_episode_pipes = 0
         self.current_episode_timesteps = 0
         
         # Initialize log file
         with open(self.log_file, "w", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["Timestamp", "Episodes", "Avg Reward", "Avg Timesteps", "Learning Rate", "Batch Size", "Gamma"])
+            writer.writerow(["Timestamp", "Episodes", "Avg Reward", "Avg Timesteps", "Learning Rate", "Batch Size", "Gamma", "Avg Pipes"])
 
-    def log_episode(self, episode, reward, timesteps):
+    def log_episode(self, episode, reward, timesteps, pipes):
         self.episode_rewards.append(reward)
         self.episode_timesteps.append(timesteps)
-        
+        self.episode_pipes.append(pipes)
+
         if episode % 100 == 0:
+            print("dsfsdfsd", len(self.episode_pipes))
             avg_reward = sum(self.episode_rewards) / len(self.episode_rewards) if self.episode_rewards else 0
             avg_timesteps = sum(self.episode_timesteps) / len(self.episode_timesteps) if self.episode_timesteps else 0
+            avg_pipes = sum(self.episode_pipes) / len(self.episode_pipes) if self.episode_pipes else 0
             
             with open(self.log_file, "a", newline="") as f:
                 writer = csv.writer(f)
                 writer.writerow([
-                    time.strftime("%Y-%m-%d %H:%M:%S"), episode, avg_reward, avg_timesteps,
-                    self.learning_rate, self.batch_size, self.gamma
+                    time.strftime("%Y-%m-%d %H:%M:%S"), episode, avg_reward, avg_timesteps, 
+                    self.learning_rate, self.batch_size, self.gamma, avg_pipes
                 ])
             
             self.episode_rewards.clear()
             self.episode_timesteps.clear()
+            self.episode_pipes.clear()
 
 def main():
     parser = argparse.ArgumentParser()
@@ -67,18 +72,20 @@ def main():
             done = False
             ep_reward = 0
             timesteps = 0
-            
+            ep_pipes = 0
             while not done:
                 action, log_prob, value = agent.select_action(state)
                 next_state, reward, done, info = env.step(action)
                 agent.store_transition(state, action, log_prob, reward, float(done), value, info)
                 state = next_state
                 ep_reward += reward
+                ep_pipes = info["score"]
                 timesteps += 1
+
             
             agent.update()  # PPO update after each episode
             rewards.append(ep_reward)
-            logger.log_episode(ep + 1, ep_reward, timesteps)
+            logger.log_episode(ep + 1, ep_reward, timesteps, ep_pipes)
             print(f"Episode {ep + 1}/{args.episodes}, Reward: {ep_reward}")
             
             if ep_reward > max_reward:
