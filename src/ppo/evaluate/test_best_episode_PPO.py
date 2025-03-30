@@ -17,11 +17,12 @@ agent = PPOAgent(obs_dim, act_dim)
 agent.load("trained_models\exp_0_ep26000_lr3e-05_batch128_gamma0.9999.pth")
 #agent.load("trained_models\exp_72_ep27500_lr0.0001_batch32_gamma0.95.pth")
 #agent.load("EXCEPT_ppo_flappy.pth")
-num_episodes = -1  # Anzahl der Testepisoden
+num_episodes = 100  # Anzahl der Testepisoden
 
 best_reward = -float("inf")
 best_seed = None
 best_score = -1
+score_array = []
 
 def set_seed(seed):
     random.seed(seed)
@@ -43,6 +44,8 @@ for episode in range(num_episodes):
         episode_reward += reward
         if done:
             print(f"Score: {info['score']}")
+            score_array.append(info['score'])
+    #score_array.append(info['score'])
 
     if episode_reward > best_reward:
         best_reward = episode_reward
@@ -50,7 +53,8 @@ for episode in range(num_episodes):
         best_score = info['score']
 
 print(f"\nBest episode reward: {best_reward} (Seed: {best_seed}; Score {best_score})")
-
+print("AVG_Score: ", (sum(score_array) / num_episodes) )
+print(score_array)
 #26.000
 #(Seed: 781802; Score 211)
 #(Seed: 845647; Score 216)

@@ -31,7 +31,6 @@ class TrainingLogger:
         self.episode_pipes.append(pipes)
 
         if episode % 100 == 0:
-            print("dsfsdfsd", len(self.episode_pipes))
             avg_reward = sum(self.episode_rewards) / len(self.episode_rewards) if self.episode_rewards else 0
             avg_timesteps = sum(self.episode_timesteps) / len(self.episode_timesteps) if self.episode_timesteps else 0
             avg_pipes = sum(self.episode_pipes) / len(self.episode_pipes) if self.episode_pipes else 0
