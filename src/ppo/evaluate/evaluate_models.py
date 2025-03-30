@@ -3,9 +3,9 @@ import re
 import numpy as np
 import pandas as pd
 import torch
-from my_ppo import PPOAgent
 import gym
 import flappy_bird_gym
+from my_ppo import PPOAgent
 
 # Directory containing trained models
 MODEL_DIR = "trained_models/"

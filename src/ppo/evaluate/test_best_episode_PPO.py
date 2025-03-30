@@ -14,8 +14,9 @@ act_dim = env.action_space.n  # Diskrete Aktionen
 # === Lade den PPO-Agenten ===
 agent = PPOAgent(obs_dim, act_dim)
 #agent.load("ppo_flappy.pth")  # Lade dein trainiertes Modell
-#agent.load("trained_models\exp_55_ep20000_lr0.0001_batch128_gamma0.98.pth")
-agent.load("trained_models\exp_72_ep27500_lr0.0001_batch32_gamma0.95.pth")
+agent.load("trained_models\exp_0_ep26000_lr3e-05_batch128_gamma0.9999.pth")
+#agent.load("trained_models\exp_72_ep27500_lr0.0001_batch32_gamma0.95.pth")
+#agent.load("EXCEPT_ppo_flappy.pth")
 num_episodes = -1  # Anzahl der Testepisoden
 
 best_reward = -float("inf")
@@ -34,7 +35,7 @@ for episode in range(num_episodes):
     obs = env.reset()
     episode_reward = 0
     done = False
-    print(f"Running episode {episode + 1}/{num_episodes} with seed {seed}...")
+    print(f"Running episode {episode + 1}/{num_episodes} with seed {seed}... best score: {best_score}    best seed: {best_seed}")
 
     while not done:
         action, log_prob, value = agent.select_action(obs)
@@ -50,16 +51,21 @@ for episode in range(num_episodes):
 
 print(f"\nBest episode reward: {best_reward} (Seed: {best_seed}; Score {best_score})")
 
+#26.000
+#(Seed: 781802; Score 211)
+#(Seed: 845647; Score 216)
+#(Seed: 569581; Score 227)
+
 # === Wiederholung der besten Episode ===
 print("\nReplaying the best episode...")
 #set_seed(best_seed)
-set_seed(1172)
+set_seed(569581)
 obs = env.reset()
 done = False
 
 while not done:
     env.render()
-    time.sleep(0.03)
+    time.sleep(0.0075)
     action, _, _ = agent.select_action(obs)
     obs, _, done, _ = env.step(action)
 

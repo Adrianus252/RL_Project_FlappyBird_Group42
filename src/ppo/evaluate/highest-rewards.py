@@ -4,7 +4,7 @@ import re
 import matplotlib.pyplot as plt
 
 # Load all CSV files in the experiment_logs directory
-csv_files = glob.glob("experiment_logs/*.csv")
+csv_files = glob.glob("_batch_gut_experiment_logs/*.csv")
 
 # Check if we have any CSV files
 if not csv_files:
@@ -15,12 +15,12 @@ else:
         df = pd.read_csv(file)
 
         # Extract experiment details from filename
-        match = re.search(r"exp_(\d+)_steps(\d+)_lr([\d\.]+)_batch(\d+)", file)
+        match = re.search(r"exp_(\d+)_ep(\d+)_lr([\d\.]+)_batch(\d+)", file)
         if match:
             exp_id, steps, lr, batch = match.groups()
             exp_name = f"Exp {exp_id} | Steps {steps} | LR {lr} | Batch {batch}"
         else:
-            exp_name = file.split("/")[-1]  # Fallback to filename
+            exp_name = file.split("\\")[-1]  # Fallback to filename
         
         df["experiment"] = exp_name
         df_list.append(df)

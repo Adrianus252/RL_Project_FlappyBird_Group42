@@ -3,34 +3,44 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 
-# === ActorCritic Network for discrete actions ===
-class ActorCriticNet(nn.Module):
+# === Actor Netzwerk ===
+class ActorNet(nn.Module):
     def __init__(self, obs_dim, act_dim):
         super().__init__()
-        self.shared = nn.Sequential(
+        self.policy = nn.Sequential(
             nn.Linear(obs_dim, 128),
             nn.ReLU(),
             nn.Linear(128, 64),
-            nn.ReLU()
+            nn.ReLU(),
+            nn.Linear(64, act_dim)
         )
-        self.policy_head = nn.Linear(64, act_dim)  # discrete logits
-        self.value_head = nn.Linear(64, 1)
+        self.log_std = nn.Parameter(torch.zeros(act_dim))  # Trainierbare log_std für Exploration
 
     def forward(self, x):
-        z = self.shared(x)
-        logits = self.policy_head(z)
-        value = self.value_head(z)
-        return logits, value
+        logits = self.policy(x)
+        probs = torch.softmax(logits, dim=-1)  # Sicherstellen, dass Werte Wahrscheinlichkeiten sind
+        std = self.log_std.exp()
+        return probs, std
 
-# === Simple Memory Buffer for One Episode ===
+# === Critic Netzwerk ===
+class CriticNet(nn.Module):
+    def __init__(self, obs_dim):
+        super().__init__()
+        self.value = nn.Sequential(
+            nn.Linear(obs_dim, 128),
+            nn.ReLU(),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            nn.Linear(64, 1)
+        )
+
+    def forward(self, x):
+        return self.value(x)
+
+# === Speicher für PPO ===
 class PPOMemory:
     def __init__(self):
-        self.states = []
-        self.actions = []
-        self.log_probs = []
-        self.rewards = []
-        self.dones = []
-        self.values = []
+        self.states, self.actions, self.log_probs, self.rewards, self.dones, self.values = [], [], [], [], [], []
 
     def store(self, state, action, log_prob, reward, done, value):
         self.states.append(state)
@@ -40,100 +50,62 @@ class PPOMemory:
         self.dones.append(done)
         self.values.append(value)
 
-    def clear(self):
-        self.states = []
-        self.actions = []
-        self.log_probs = []
-        self.rewards = []
-        self.dones = []
-        self.values = []
+    def get_all(self):
+        return (
+            np.array(self.states, dtype=np.float32),
+            np.array(self.actions),
+            np.array(self.log_probs, dtype=np.float32),
+            np.array(self.rewards, dtype=np.float32),
+            np.array(self.dones, dtype=np.float32),
+            np.array(self.values, dtype=np.float32),
+        )
 
-# === PPO Agent ===
+    def clear(self):
+        self.states.clear()
+        self.actions.clear()
+        self.log_probs.clear()
+        self.rewards.clear()
+        self.dones.clear()
+        self.values.clear()
+
+# === PPO-Agent ===
 class PPOAgent:
     def __init__(
-        self,
-        obs_dim,
-        act_dim,
-        lr=2.5e-4,
-        gamma=0.99,
-        lam=0.95,
-        eps_clip=0.2,
-        K_epochs=4,
-        batch_size=64
+        self, obs_dim, act_dim, lr=1e-4, gamma=0.999, lam=0.95, eps_clip=0.2, 
+        K_epochs=5, batch_size=64, entropy_coef=0.01
     ):
-        self.gamma = gamma
-        self.lam = lam
-        self.eps_clip = eps_clip
-        self.K_epochs = K_epochs
-        self.batch_size = batch_size
+        self.gamma, self.lam, self.eps_clip = gamma, lam, eps_clip
+        self.K_epochs, self.batch_size, self.entropy_coef = K_epochs, batch_size, entropy_coef
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.net = ActorCriticNet(obs_dim, act_dim).to(self.device)
-        self.optimizer = optim.Adam(self.net.parameters(), lr=lr, weight_decay=1e-5)
+        self.actor = ActorNet(obs_dim, act_dim).to(self.device)
+        self.critic = CriticNet(obs_dim).to(self.device)
 
+        self.actor_optimizer = optim.Adam(self.actor.parameters(), lr=lr)
+        self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=lr)
+        
         self.memory = PPOMemory()
 
-    # --- Action selection ---
-    def select_action(self, state):
-        state_t = torch.FloatTensor(state).to(self.device)
-        logits, value = self.net(state_t)
-        dist = torch.distributions.Categorical(logits=logits)
-        action = dist.sample()
-        return action.item(), dist.log_prob(action).item(), value.item()
-
-    # --- Store transition in memory ---
-    def store_transition(self, state, action, log_prob, reward, done, value, info):
-        # Strafe für zu große Sprünge
-        if action > 0.8:
-            reward -= 0.1  
-
-        # Bestrafe das Hochfliegen zu stark
-        reward -= abs(action) * 0.1  
-
-        # Stärkere Belohnung fürs Überleben
-        reward += 0.05  # Kleiner, aber langfristig hilfreich
-
-        # Bonus für das erfolgreiche Durchfliegen einer Pipe
-        if "score" in info:
-            reward += info["score"] * 5  
-
-        self.memory.store(state, action, log_prob, reward, done, value)
-
-    # --- GAE Computation ---
-    def compute_gae(self, next_value):
-        rewards = self.memory.rewards
-        dones = self.memory.dones
-        values = self.memory.values + [next_value]
-
-        advantages = []
-        gae = 0.0
+    def compute_gae(self, rewards, values, dones, next_value):
+        advantages, gae = [], 0.0
+        values = np.append(values, next_value)  # Next Value hinzufügen für korrekte Berechnung
         for i in reversed(range(len(rewards))):
             delta = rewards[i] + self.gamma * values[i+1] * (1 - dones[i]) - values[i]
             gae = delta + self.gamma * self.lam * (1 - dones[i]) * gae
             advantages.insert(0, gae)
-        return advantages
+        return np.array(advantages, dtype=np.float32)
 
-    # --- PPO Update ---
     def update(self):
-        # Prepare
-        states = np.array(self.memory.states, dtype=np.float32)
-        actions = np.array(self.memory.actions)
-        old_log_probs = np.array(self.memory.log_probs, dtype=np.float32)
-        dones = np.array(self.memory.dones, dtype=np.float32)
-        values = np.array(self.memory.values, dtype=np.float32)
+        states, actions, old_log_probs, rewards, dones, values = self.memory.get_all()
 
-        # Next value (for final GAE)
-        next_value = 0.0
-        if dones[-1] == 0:
-            s_t = torch.FloatTensor(states[-1]).to(self.device)
-            _, nxt_val = self.net(s_t)
-            next_value = nxt_val.item()
+        # Next Value aus dem letzten Zustand berechnen (falls die Episode nicht endet)
+        last_state = torch.FloatTensor(states[-1]).to(self.device)
+        next_value = self.critic(last_state).item() * (1 - dones[-1])
 
-        advantages = self.compute_gae(next_value)
-        advantages = np.array(advantages, dtype=np.float32)
+        advantages = self.compute_gae(rewards, values, dones, next_value)
         returns = advantages + values
 
-        # Convert to torch
+        # Konvertiere in Tensoren
         states_t = torch.FloatTensor(states).to(self.device)
         actions_t = torch.LongTensor(actions).to(self.device)
         old_log_probs_t = torch.FloatTensor(old_log_probs).to(self.device)
@@ -145,27 +117,48 @@ class PPOAgent:
 
         for _ in range(self.K_epochs):
             for batch_states, batch_actions, batch_old_log_probs, batch_advantages, batch_returns in dataloader:
-                logits, val = self.net(batch_states)
-                dist = torch.distributions.Categorical(logits=logits)
+                probs, _ = self.actor(batch_states)
+                value_pred = self.critic(batch_states).squeeze()
+
+                dist = torch.distributions.Categorical(probs=probs)
                 new_log_probs = dist.log_prob(batch_actions)
+                entropy = dist.entropy().mean()
 
                 ratio = (new_log_probs - batch_old_log_probs).exp()
                 surr1 = ratio * batch_advantages
                 surr2 = torch.clamp(ratio, 1.0 - self.eps_clip, 1.0 + self.eps_clip) * batch_advantages
-
                 policy_loss = -torch.min(surr1, surr2).mean()
-                value_loss = torch.nn.MSELoss()(val.squeeze(), batch_returns)
-                loss = policy_loss + 0.5 * value_loss
+                value_loss = nn.MSELoss()(value_pred, batch_returns)
 
-                self.optimizer.zero_grad()
+                loss = policy_loss + 0.5 * value_loss - self.entropy_coef * entropy
+
+                self.actor_optimizer.zero_grad()
+                self.critic_optimizer.zero_grad()
                 loss.backward()
-                self.optimizer.step()
+                self.actor_optimizer.step()
+                self.critic_optimizer.step()
 
         self.memory.clear()
 
-    # --- Save & Load ---
+    def select_action(self, state):
+        state_t = torch.FloatTensor(state).to(self.device)
+        probs, std = self.actor(state_t)
+        dist = torch.distributions.Categorical(probs=probs)
+        action = dist.sample()
+        return action.item(), dist.log_prob(action).item(), self.critic(state_t).item()
+
+    def store_transition(self, state, action, log_prob, reward, done, value, info):
+        reward += 0.1  # Überleben belohnen
+        if action == 1:
+            reward -= 0.02  # Kleine Bestrafung für Springen
+        if "score" in info:
+            reward += info["score"] * 5  # Fortschritt belohnen
+        self.memory.store(state, action, log_prob, reward, done, value)
+
     def save(self, path):
-        torch.save(self.net.state_dict(), path)
+        torch.save({"actor": self.actor.state_dict(), "critic": self.critic.state_dict()}, path)
 
     def load(self, path):
-        self.net.load_state_dict(torch.load(path, map_location=self.device))
+        checkpoint = torch.load(path, map_location=self.device)
+        self.actor.load_state_dict(checkpoint["actor"])
+        self.critic.load_state_dict(checkpoint["critic"])

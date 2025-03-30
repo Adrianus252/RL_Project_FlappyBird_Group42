@@ -6,10 +6,10 @@ import os
 venv_python = "./Scripts/python"  # Anpassen falls nötig
 
 # Define hyperparameter sets
-episodes_list = [27500]  # Anzahl der Trainings-Episoden
-learning_rates = [0.001, 0.0001]  # Lernrate
-batch_sizes = [256,128,64,32]  # Batchgröße
-gammas = [0.99, 0.98, 0.95]  # Discount-Faktor
+episodes_list = [30000]  # Anzahl der Trainings-Episoden
+learning_rates = [0.00003]  # Lernrate
+batch_sizes = [128]  # Batchgröße
+gammas = [0.9999]  # Discount-Faktor
 
 # Create directories for logs and models
 log_dir = "experiment_logs"

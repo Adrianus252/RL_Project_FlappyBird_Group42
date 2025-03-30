@@ -2,25 +2,35 @@
 
 This project aims to train an agent to play Flappy Bird using a custom-developed reinforcement learning algorithm based on Torch, utilizing the Proximal Policy Optimization (PPO) approach. The agent is trained to maximize its cumulative reward by navigating through pipes while avoiding obstacles.
 
+- [Flappy Bird Reinforcement Learning with PPO](#flappy-bird-reinforcement-learning-with-td3)
+  - [Project Structure](#project-structure)
+  - [Manual Use](#manual-use)
+    - [Training from Scratch](#training-from-scratch)
+    - [Testing from Scratch](#testing-from-scratch)
+  - [Automated Use](#automated-use)
+    - [Training in Batches](#training-in-batches)
+  - [Results](#results)
+  - [Conclusion](#conclusion)
+
+
 
 ## Project Structure
 ```sh
 ppo/
 ├── batch/
 │   ├── run_overnight.py    # Run the training and testing overnight in batches.
-│   ├── train.py            # Batch-based script for training the PPO model.
+│   ├── train_myPPO_batch.py            # Batch-based script for training the PPO model.
 │   ├── my_ppo.py           # PPO-Agent for the Flappy Bird.
 ├── evaluate/
 │   └── highest-rewards.py             # Show the 5 best results by average values.
 │   └── evaluate_models.py             # Run tests and print all results into a csv file
 │   └── evaluated_models_md.py         # Convert the csv file from `evaluate_models.py` into markdown compatible table.
+│   └── test_best_episode_PPO.py    # Run tests to evaluate performance and visualize the best game at the end. 
 │   ├── my_ppo.py           # PPO-Agent for the Flappy Bird.
 ├── manual/
-│   ├── test_best_episode.py    # Run tests to evaluate performance and visualize the best game at the end. 
+│   ├── test_myPPO.py                 # Run tests to evaluate performance.
+│   ├── train_myPPO.py                # Training script.
 │   ├── my_ppo.py           # PPO-Agent for the Flappy Bird.
-│   ├── test.py                 # Run tests to evaluate performance.
-│   ├── train.py                # Training script.
-
 ├── README.md               # Project documentation.
 └── requirements.txt        # External Libraries.
 ```
@@ -64,17 +74,52 @@ python src/ppo/test_myPPO.py
 This will load the trained model and execute it in the Flappy Bird environment, displaying the agent’s performance every 100th episode.
 
 ## Automated Use
-> Note: All commands should be exectuted from the root project folder unless otherwise defined. If you execute commands from another folder you might have to update certain paths.
+> **Note**: All commands should be exectuted from the root project folder unless otherwise defined. If you execute commands from another folder you might have to update certain paths.
 
 ### Training in Batches
-To train the agent overnight in batches, use the following command:
-   ```sh
-   source Script/activate
-   python src/ppo/batch/run_overnight.py
-   ```
-This script automates the training and testing process, saving the model after each batch. It allows you to continue training with different parameters overnight without manual intervention. You can modify the batch size, learning rate, and gamma in the `run_overnight.py` script as per your needs.
+
+Use:
+
+```python
+python src/ppo/batch/run_overnight.py
+```
+
+This automates training/testing with various hyperparameters (timesteps, learning rate, batch size, gamma) in one go. It saves each model to `trained_models/` and logs to `experiment_logs/`.
+
+- Iterate through predefined experiment configurations
+- Train models with various hyperparameters
+- Save model files to `trained_models/`
+- Log training metrics to `experiment_logs/`
+
+After training, all models in `trained_models` can be evaluated by running:
+
+```python
+python .\src\ppo\evaluate\evaluate_models.py
+```
+
+It produces `evaluation_results_ppo.csv`. You can then convert those results into a Markdown table using:
+
+```python
+python src/ppo/evaluate/evaluate_models_md.py
+```
+
+Which generates `evaluated_models_ppo.md`.
+
+For a quick overview of top-performing experiments, run:
+
+```python
+python src/ppo/evaluate/highest_rewards.py
+```
+
+This plots the 5 best experiments by average reward, each with different hyperparameters.
 
 ## Results
+
+
+TODO
+
+
+
 Multiple hyperparameter configurations were tested to understand their effect on the agent’s performance. The following hyperparameters were varied:
 - Episoden: [5000, 10000, 20000, 27500]: The number of Episoden used for training the model.
 - Learning Rates: [0.0001, 0.001, 0.005, 0.01]: The learning rate used for the optimizer.

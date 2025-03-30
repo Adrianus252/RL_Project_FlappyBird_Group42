@@ -61,43 +61,38 @@ def main():
     
     max_reward = 0
     rewards = []
-    
-    for ep in range(args.episodes):
-        state = env.reset()
-        done = False
-        ep_reward = 0
-        timesteps = 0
-        
-        while not done:
-            action, log_prob, value = agent.select_action(state)
-            next_state, reward, done, info = env.step(action)
-            agent.store_transition(state, action, log_prob, reward, float(done), value, info)
-            state = next_state
-            ep_reward += reward
-            timesteps += 1
-        
-        agent.update()  # PPO update after each episode
-        rewards.append(ep_reward)
-        logger.log_episode(ep + 1, ep_reward, timesteps)
-        print(f"Episode {ep + 1}/{args.episodes}, Reward: {ep_reward}")
-        
-        if ep_reward > max_reward:
-            max_reward = ep_reward
+    try:
+        for ep in range(args.episodes):
+            state = env.reset()
+            done = False
+            ep_reward = 0
+            timesteps = 0
+            
+            while not done:
+                action, log_prob, value = agent.select_action(state)
+                next_state, reward, done, info = env.step(action)
+                agent.store_transition(state, action, log_prob, reward, float(done), value, info)
+                state = next_state
+                ep_reward += reward
+                timesteps += 1
+            
+            agent.update()  # PPO update after each episode
+            rewards.append(ep_reward)
+            logger.log_episode(ep + 1, ep_reward, timesteps)
+            print(f"Episode {ep + 1}/{args.episodes}, Reward: {ep_reward}")
+            
+            if ep_reward > max_reward:
+                max_reward = ep_reward
+    except KeyboardInterrupt:
+        print("\nTraining gestoppt. Speichere Modell...")
+        agent.save("EXCEPT_ppo_flappy.pth")
+        print("Modell gespeichert als 'ppo_flappy.pth'.")
     
     agent.save(args.model_file)
     print(f"Training done! Model saved to {args.model_file}")
     print("MAX Reward: ", max_reward)
     env.close()
     
-
-    #plt.figure(figsize=(10, 5))
-    #plt.plot(rewards, label="Reward per Episode", color='blue')
-    #plt.xlabel("Episode")
-    #plt.ylabel("Reward")
-    #plt.title("Training Progress of PPO on Flappy Bird")
-    #plt.legend()
-    #plt.grid()
-    #plt.show()
 
 if __name__ == "__main__":
     main()
