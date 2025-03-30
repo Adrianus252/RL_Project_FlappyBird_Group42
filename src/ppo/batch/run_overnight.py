@@ -26,19 +26,19 @@ for i, (episodes, lr, batch_size, gamma) in enumerate(experiments):
     log_file = f"{log_dir}/{experiment_name}.csv"
     model_file = f"{model_dir}/{experiment_name}.pth"
 
-    print(f"\n🔹 Running Experiment {i+1}/{len(experiments)}: {experiment_name}")
+    print(f"\n Running Experiment {i+1}/{len(experiments)}: {experiment_name}")
 
-    # Train the model
-    train_power_command = [
-        "powershell", "-Command",
-        f"& py -3.9 'src/ppo/batch/train_myPPO_batch.py' "
-        f"--episodes {episodes} "
-        f"--learning_rate {lr} "
-        f"--batch_size {batch_size} "
-        f"--gamma {gamma} "
-        f"--log_file '{log_file}' "
-        f"--model_file '{model_file}'"
+    train_command = [
+        venv_python,
+        "src/ppo/batch/train_myPPO_batch.py",
+        "--episodes", str(episodes),
+        "--learning_rate", str(lr),
+        "--batch_size", str(batch_size),
+        "--gamma", str(gamma),
+        "--log_file", log_file,
+        "--model_file", model_file
     ]
-    subprocess.run(train_power_command)
+    
+    subprocess.run(train_command)
 
-print("\n✅ All experiments completed! Logs and models saved.")
+print("\n All experiments completed! Logs and models saved.")
