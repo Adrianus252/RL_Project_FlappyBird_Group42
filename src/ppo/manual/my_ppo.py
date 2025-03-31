@@ -95,7 +95,7 @@ class PPOAgent:
             advantages.insert(0, gae)
         return np.array(advantages, dtype=np.float32)
 
-    def update(self):
+    def update(self, target_kl=0.05): # relaxed KL target
         states, actions, old_log_probs, rewards, dones, values = self.memory.get_all()
 
         # Next Value aus dem letzten Zustand berechnen (falls die Episode nicht endet)
@@ -103,6 +103,9 @@ class PPOAgent:
         next_value = self.critic(last_state).item() * (1 - dones[-1])
 
         advantages = self.compute_gae(rewards, values, dones, next_value)
+        #advantages = np.array(advantages, dtype=np.float32)
+        #  Normalize advantages
+        advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-8)
         returns = advantages + values
 
         # Konvertiere in Tensoren
@@ -115,21 +118,26 @@ class PPOAgent:
         dataset = torch.utils.data.TensorDataset(states_t, actions_t, old_log_probs_t, advantages_t, returns_t)
         dataloader = torch.utils.data.DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
 
-        for _ in range(self.K_epochs):
+        #for _ in range(self.K_epochs):
+        for epoch in range(self.K_epochs):
+            total_kl = 0.0
             for batch_states, batch_actions, batch_old_log_probs, batch_advantages, batch_returns in dataloader:
                 probs, _ = self.actor(batch_states)
                 value_pred = self.critic(batch_states).squeeze()
 
                 dist = torch.distributions.Categorical(probs=probs)
                 new_log_probs = dist.log_prob(batch_actions)
-                entropy = dist.entropy().mean()
+
+                kl = (batch_old_log_probs - new_log_probs).mean()
+                total_kl += kl.item()
 
                 ratio = (new_log_probs - batch_old_log_probs).exp()
                 surr1 = ratio * batch_advantages
                 surr2 = torch.clamp(ratio, 1.0 - self.eps_clip, 1.0 + self.eps_clip) * batch_advantages
+                
                 policy_loss = -torch.min(surr1, surr2).mean()
                 value_loss = nn.MSELoss()(value_pred, batch_returns)
-
+                entropy = dist.entropy().mean()
                 loss = policy_loss + 0.5 * value_loss - self.entropy_coef * entropy
 
                 self.actor_optimizer.zero_grad()
@@ -137,6 +145,11 @@ class PPOAgent:
                 loss.backward()
                 self.actor_optimizer.step()
                 self.critic_optimizer.step()
+
+            avg_kl = total_kl / len(dataloader)
+            if avg_kl > target_kl:
+                print(f"Early stopping PPO update due to high KL: {avg_kl:.5f} > {target_kl}")
+                break
 
         self.memory.clear()
 

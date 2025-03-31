@@ -1,7 +1,7 @@
 import csv
 
 # Input and output file names
-csv_file = "batch_gut_evaluation_results.csv"  # Replace with your actual CSV file path
+csv_file = "batch_gut_evaluation_results.csv"
 md_file = "output.md"  # Output markdown file
 
 # Read CSV and convert to Markdown table

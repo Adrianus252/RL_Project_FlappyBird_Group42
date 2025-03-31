@@ -76,24 +76,24 @@ def evaluate_model(model, env, num_episodes=NUM_EPISODES):
 
 # Main function to run evaluation on all models
 def main():
-    models = [f for f in os.listdir(MODEL_DIR) if f.endswith(".pth")]  # Jetzt suchen wir .pth Modelle
+    models = [f for f in os.listdir(MODEL_DIR) if f.endswith(".pth")]
     if not models:
         print("No models found in directory:", MODEL_DIR)
         return
 
-    env = gym.make("FlappyBird-v0") # Ersetze dies mit der tatsächlichen Umgebung
+    env = gym.make("FlappyBird-v0")
     obs_dim = env.observation_space.shape[0]
-    act_dim = env.action_space.n  # Diskrete Aktionen
+    act_dim = env.action_space.n
     results = []
 
     for model_file in models:
         model_path = os.path.join(MODEL_DIR, model_file)
         print(f"Evaluating model: {model_file}")
 
-        model = PPOAgent(obs_dim, act_dim)  # Dein PPO-Agent
+        model = PPOAgent(obs_dim, act_dim)
 
         # Lade die Gewichte des Modells
-        model.load(model_path)  # Jetzt lädt das PPO-Modell die gespeicherten .pth-Dateien
+        model.load(model_path)
 
         # Extract hyperparameters from filename (optional)
         hyperparams = extract_hyperparameters(model_file)

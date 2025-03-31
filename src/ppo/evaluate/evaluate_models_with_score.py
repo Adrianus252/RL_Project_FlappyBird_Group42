@@ -46,15 +46,15 @@ def evaluate_model(model, env, num_episodes=NUM_EPISODES):
         episode_actions = []
         steps = 0
 
-        while not done:# and steps < MAX_STEPS:
+        while not done:
             action, _ , _ = model.select_action(obs)
             obs, reward, done, info = env.step(action)
 
-            episode_reward += reward # reward is a 1-element array due to DummyVecEnv
-            episode_actions.append(action)  # also batched
+            episode_reward += reward
+            episode_actions.append(action)
             steps += 1
 
-            episode_pipes = info["score"]  # Track number of passed pipes
+            episode_pipes = info["score"]
 
         reward_history.append(episode_reward)
         passed_pipes_history.append(episode_pipes)
@@ -78,24 +78,24 @@ def evaluate_model(model, env, num_episodes=NUM_EPISODES):
     }
 
 def main():
-    models = [f for f in os.listdir(MODEL_DIR) if f.endswith(".pth")]  # Jetzt suchen wir .pth Modelle
+    models = [f for f in os.listdir(MODEL_DIR) if f.endswith(".pth")]
     if not models:
         print("No models found in directory:", MODEL_DIR)
         return
 
-    env = gym.make("FlappyBird-v0") # Ersetze dies mit der tatsächlichen Umgebung
+    env = gym.make("FlappyBird-v0")
     obs_dim = env.observation_space.shape[0]
-    act_dim = env.action_space.n  # Diskrete Aktionen
+    act_dim = env.action_space.n
     results = []
 
     for model_file in models:
         model_path = os.path.join(MODEL_DIR, model_file)
         print(f"Evaluating PPO model: {model_file}")
 
-        model = PPOAgent(obs_dim, act_dim)  # Dein PPO-Agent
+        model = PPOAgent(obs_dim, act_dim)
 
         # Lade die Gewichte des Modells
-        model.load(model_path)  # Jetzt lädt das PPO-Modell die
+        model.load(model_path)
 
         hyperparams = extract_hyperparameters(model_file)
         metrics = evaluate_model(model, env)

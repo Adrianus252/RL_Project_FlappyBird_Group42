@@ -92,7 +92,7 @@ def main():
     except KeyboardInterrupt:
         print("\nTraining gestoppt. Speichere Modell...")
         agent.save("EXCEPT_ppo_flappy.pth")
-        print("Modell gespeichert als 'ppo_flappy.pth'.")
+        print("Modell gespeichert als 'EXCEPT_ppo_flappy.pth'.")
     
     agent.save(args.model_file)
     print(f"Training done! Model saved to {args.model_file}")
