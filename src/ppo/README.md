@@ -116,20 +116,17 @@ This plots the 5 best experiments by average reward, each with different hyperpa
 ## Results
 
 
-TODO
+Multiple hyperparameter configurations were tested to analyze their impact on the agent’s performance. The following hyperparameters were adjusted:
 
+- **Episoden**: Different values were tested to determine the optimal number of training iterations.
+- **Learning Rates**: Various learning rates were explored to assess their influence on optimization.
+- **Batch Sizes**: Different batch sizes were used to evaluate their effect on model updates.
+- **Gammas**: Several discount factors were considered to understand their role in future reward calculation.
 
-
-Multiple hyperparameter configurations were tested to understand their effect on the agent’s performance. The following hyperparameters were varied:
-- Episoden: [5000, 10000, 20000, 27500]: The number of Episoden used for training the model.
-- Learning Rates: [0.0001, 0.001, 0.005, 0.01]: The learning rate used for the optimizer.
-- Batch Sizes: [32, 64, 128, 256]: The batch size used during updates.
-- Gammas: [0.95, 0.98, 0.99]: The discount factor used for calculating future rewards.
 
 The following chart shows the average reward received by the agent after testing each model with 100 episodes. It highlights the top 5 experiments, with each line corresponding to a different experiment with varying hyperparameters:
-![top5-rewards-overview](../../assets/imgs/ppo-highest-rewards.png)
 
-![top5-rewards-overview](../../assets/imgs/ppo-highest-rewards_2.png)
+![top5-rewards-overview](../../assets/imgs/Highest_from_all.png)
 
 
 
