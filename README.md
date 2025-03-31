@@ -15,6 +15,7 @@ A dedicated presentation of the project is available on the groups project websi
 # Quick Start
 
 - [Installation](#installation)
+- [Sample](#sample)
 - [License](#license)
 - [Authors](#authors)
 
